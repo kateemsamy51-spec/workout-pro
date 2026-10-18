@@ -1,1 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Pro — دفتر التمرين الاحترافي</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        .btn-primary { background: #2563eb; color: white; border-radius: 8px; font-weight: bold; }
+        .btn-primary:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body class="p-4 max-w-lg mx-auto">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-blue-500">Workout Pro 🏋️‍♂️</h1>
+            <p class="text-xs text-slate-400">دفتر التمرين الاحترافي — النسخة الخاصة</p>
+        </div>
+        <div id="streak-badge" class="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+            🔥 <span id="streak-count">0</span> يوم
+        </div>
+    </header>
 
+    <!-- Daily Habit Streaks -->
+    <section class="card p-4 mb-4">
+        <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-blue-400"></i> العادات اليومية (Daily Streaks)
+        </h2>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="habit-water" class="accent-blue-500 w-4 h-4" onchange="toggleHabit()">
+                <span>💧 شرب الماء (3L+)</span>
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="habit-sleep" class="accent-blue-500 w-4 h-4" onchange="toggleHabit()">
+                <span>😴 نوم (7-8 ساعات)</span>
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="habit-nutrition" class="accent-blue-500 w-4 h-4" onchange="toggleHabit()">
+                <span>🥗 الالتزام بالماكروز</span>
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2.5 rounded-lg border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="habit-workout" class="accent-blue-500 w-4 h-4" onchange="toggleHabit()">
+                <span>💪 إتمام التمرين</span>
+            </label>
+        </div>
+    </section>
+
+    <!-- Injury & Deload Toggles -->
+    <section class="card p-4 mb-4">
+        <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                <i class="fa-solid fa-user-ninja text-amber-400"></i> وضع الإصابة / Deload
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="deload-toggle" class="sr-only peer" onchange="toggleDeload()">
+                <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+            </label>
+        </div>
+        <p id="deload-status" class="text-[11px] text-slate-400 mt-2">الوضع الطبيعي: أوزان التمرين الكاملة.</p>
+    </section>
+
+    <!-- Workout Entry Form -->
+    <section class="card p-4 mb-4">
+        <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-dumbbell text-emerald-400"></i> تسجيل تمرينة جديدة
+        </h2>
+        <form id="workout-form" onsubmit="saveWorkout(event)" class="space-y-3 text-xs">
+            <div>
+                <label class="block text-slate-400 mb-1">اسم التمرين</label>
+                <input type="text" id="exercise-name" placeholder="مثال: Deadlift" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-slate-400 mb-1">الوزن (كجم)</label>
+                    <input type="number" id="exercise-weight" placeholder="120" step="0.5" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">التكرارات (Reps)</label>
+                    <input type="number" id="exercise-reps" placeholder="8" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+            <button type="submit" class="w-full btn-primary p-2.5 text-xs font-bold mt-2">حفظ التمرين 💾</button>
+        </form>
+    </section>
+
+    <!-- History List -->
+    <section class="card p-4">
+        <h2 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> سجل التمارين الأخير
+        </h2>
+        <div id="workout-list" class="space-y-2 text-xs text-slate-400">
+            <p class="text-center py-4">لا توجد تمارين مسجلة حتى الآن.</p>
+        </div>
+    </section>
+
+    <script>
+        // Data Partitioning via Monthly Keys
+        const getMonthKey = () => {
+            const d = new Date();
+            return `workout_pro_${d.getFullYear()}_${d.getMonth() + 1}`;
+        };
+
+        let workouts = JSON.parse(localStorage.getItem(getMonthKey())) || [];
+        let streak = parseInt(localStorage.getItem('workout_streak')) || 0;
+
+        document.getElementById('streak-count').innerText = streak;
+
+        function saveWorkout(e) {
+            e.preventDefault();
+            const name = document.getElementById('exercise-name').value;
+            const weight = document.getElementById('exercise-weight').value;
+            const reps = document.getElementById('exercise-reps').value;
+
+            const item = { id: Date.now(), name, weight, reps, date: new Date().toLocaleDateString('ar-EG') };
+            workouts.unshift(item);
+            
+            localStorage.setItem(getMonthKey(), JSON.stringify(workouts));
+            document.getElementById('workout-form').reset();
+            renderWorkouts();
+        }
+
+        function renderWorkouts() {
+            const container = document.getElementById('workout-list');
+            if (workouts.length === 0) {
+                container.innerHTML = '<p class="text-center py-4">لا توجد تمارين مسجلة حتى الآن.</p>';
+                return;
+            }
+            container.innerHTML = workouts.map(w => `
+                <div class="bg-slate-800 border border-slate-700 p-3 rounded-lg flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-slate-200 text-sm">${w.name}</div>
+                        <div class="text-[11px] text-slate-400">${w.date}</div>
+                    </div>
+                    <div class="text-blue-400 font-bold text-sm">
+                        ${w.weight} كجم × ${w.reps}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleHabit() {
+            const habits = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            if (habits === 4) {
+                streak += 1;
+                localStorage.setItem('workout_streak', streak);
+                document.getElementById('streak-count').innerText = streak;
+            }
+        }
+
+        function toggleDeload() {
+            const isDeload = document.getElementById('deload-toggle').checked;
+            document.getElementById('deload-status').innerText = isDeload 
+                ? 'وضع الخفض (Deload): تقليل الأوزان بنسبة 30-50% والاستشفاء.' 
+                : 'الوضع الطبيعي: أوزان التمرين الكاملة.';
+        }
+
+        renderWorkouts();
+    </script>
+</body>
+</html>
